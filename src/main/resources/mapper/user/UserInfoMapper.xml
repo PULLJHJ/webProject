@@ -1,0 +1,106 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.web.project.user.mapper.UserInfoMapper">
+	<!-- select 할 요소들 -->
+	<sql id="userInfoCols">
+		UI_NUM, UI_ID, UI_PWD, UI_NAME, 
+		UI_EMAIL, UI_MOBILE, UI_DESC, UI_ZONECODE, 
+		UI_ROADADDR, UI_JIBUNADDR, UI_DETAIL_ADDR, UI_ROLE, 
+		CREDAT, LMODAT, ACTIVE
+	</sql>
+	
+	<!-- 전체 사용자 리스트 조회 -->
+	<select id="selectUserInfos" resultType="com.web.project.user.vo.UserInfoVO">
+		SELECT *
+		FROM USER_INFO
+	</select>
+	
+	<!-- 사용자 아이디로 사용자 정보 조회 -->
+	<select id="selectUserInfoByUiId" resultType="com.web.project.user.vo.UserInfoVO">
+		SELECT
+		<include refid="userInfoCols"/>
+		FROM USER_INFO
+		WHERE UI_ID = #{uiId}
+	</select>
+	
+	<!-- 사용자 번호로 유저 프로필 조회 -->
+	<select id="getUserProfile" resultType="com.web.project.user.vo.UserProfileVO">
+		SELECT UI_NAME, UI_ROADADDR, CREDAT, UI_DESC
+		FROM USER_INFO
+		WHERE UI_NUM = #{uiNum}
+	</select>
+	
+	<!--  -->
+	<select id="selectMinUserInfoByUiNum" resultType="com.web.project.user.vo.MinUserInfoVO">
+		SELECT UI_NUM, UI_NAME FROM USER_INFO WHERE UI_NUM = #{uiNum}
+	</select>
+	
+	<!-- 사용자 아이디와 비밀번호, 활성화 여부로 사용자 정보 조회 -->
+	<select id="selectUserInfoByIdAndPwd" resultType="com.web.project.user.vo.UserInfoVO">
+    	SELECT 
+	    <include refid="userInfoCols"/>
+		    FROM USER_INFO
+		    WHERE UI_ID = #{uiId}
+		    AND UI_PWD = #{uiPwd}
+		    AND ACTIVE = #{active}
+	</select>
+
+	<!-- 사용자 번호로 정보 조회 -->
+	<select id="selectUserInfo" resultType="com.web.project.user.vo.UserInfoVO">
+		SELECT UI_NUM, UI_ID, UI_NAME, UI_EMAIL, UI_MOBILE, UI_DESC, UI_ZONECODE, UI_ROADADDR, UI_JIBUNADDR, UI_DETAIL_ADDR, UI_ROLE
+		FROM USER_INFO
+		WHERE UI_NUM = #{uiNum}
+	</select>
+	
+	<!-- 사용자 이름으로 사용자 번호 조회 -->
+	<select id="selectUiNumByUiName" resultType="com.web.project.user.vo.UserInfoVO">
+		SELECT UI_NUM
+		FROM USER_INFO
+		WHERE UI_NAME = #{uiName}
+	</select>
+	
+	<!-- 사용자 정보 등록(회원가입) -->
+	<insert id="insertUserInfo">
+		INSERT INTO USER_INFO(
+			UI_ID, UI_PWD, UI_NAME, UI_EMAIL, 
+			UI_MOBILE, UI_ZONECODE, UI_ROADADDR, UI_JIBUNADDR, 
+			UI_DETAIL_ADDR, UI_DESC
+		)
+		VALUES(
+			#{uiId}, #{uiPwd}, #{uiName}, #{uiEmail},
+			#{uiMobile}, #{uiZonecode}, #{uiRoadaddr}, #{uiJibunaddr}, 
+			#{uiDetailAddr}, #{uiDesc}
+		)
+	</insert>
+	
+	<!-- 사용자 정보 수정 -->
+	<update id="updateUserInfo">
+	    UPDATE USER_INFO
+		    <set>
+		        <if test="uiId != null">UI_ID = #{uiId},</if>
+		        <if test="uiPwd != null">UI_PWD = #{uiPwd},</if>
+		        <if test="uiName != null">UI_NAME = #{uiName},</if>
+		        <if test="uiEmail != null">UI_EMAIL = #{uiEmail},</if>
+		        <if test="uiMobile != null">UI_MOBILE = #{uiMobile},</if>
+		        <if test="uiDesc != null">UI_DESC = #{uiDesc},</if>
+		        <if test="uiZonecode != null">UI_ZONECODE = #{uiZonecode},</if>
+		        <if test="uiRoadaddr != null">UI_ROADADDR = #{uiRoadaddr},</if>
+		        <if test="uiJibunaddr != null">UI_JIBUNADDR = #{uiJibunaddr},</if>
+		        <if test="uiDetailAddr != null">UI_DETAIL_ADDR = #{uiDetailAddr},</if>
+		    </set>
+	    WHERE UI_NUM = #{uiNum}
+	</update>
+	
+	<!-- 사용자 비활성화 -->
+	<update id="updateUserActive">
+		UPDATE USER_INFO 
+		SET ACTIVE = '0'
+		WHERE UI_NUM = #{uiNum}
+	</update>
+
+	<!-- 사용자 삭제 -->
+	<delete id="deleteUserInfo">
+		DELETE FROM USER_INFO
+		WHERE UI_NUM = #{uiNum}
+	</delete>
+</mapper>

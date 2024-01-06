@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mapper namespace="com.web.project.chat.mapper.ChatInfoMapper">
+	<sql id="ChatInfoCols">CI_NUM, BI_NUM, BUYER_UI_NUM, SELLER_UI_NUM, CREDAT, CRETIM</sql>
+    <!-- 채팅 정보 조회(select) 쿼리 -->
+    <select id="getChatInfoByCiId" resultType="com.web.project.chat.vo.ChatInfoVO">
+        SELECT * FROM CHAT_INFO WHERE CI_NUM = #{ciNum}
+    </select>
+    
+    <select id="getChatInfoListByUiNum" resultType="com.web.project.chat.vo.ChatInfoVO">
+    	SELECT <include refid="ChatInfoCols"/> FROM CHAT_INFO WHERE BUYER_UI_NUM = #{uiNum} OR SELLER_UI_NUM = #{uiNum}
+    </select>
+    
+    <select id="selectChatInfo" resultType="com.web.project.chat.vo.ChatInfoVO">
+        SELECT <include refid="ChatInfoCols"/> FROM CHAT_INFO WHERE BUYER_UI_NUM = #{buyerUiNum} AND BI_NUM = #{biNum}
+    </select>
+    
+    <select id="selectChatInfoByCiNum" resultType="com.web.project.chat.vo.ChatInfoVO">
+	    SELECT <include refid="ChatInfoCols"/> FROM CHAT_INFO WHERE CI_NUM = #{ciNum}
+	</select>
+	
+	<select id="selectChatRoomList" resultType="com.web.project.chat.vo.ChatRoomInfoVO">
+		SELECT 
+		IF(CI.BUYER_UI_NUM = #{uiNum}, CI.BUYER_UI_NUM, CI.SELLER_UI_NUM) UI_NUM,
+		IF(CI.BUYER_UI_NUM = #{uiNum}, BUI.UI_NAME, SUI.UI_NAME) UI_NAME,
+		IF(CI.BUYER_UI_NUM = #{uiNum}, CI.SELLER_UI_NUM, CI.BUYER_UI_NUM) OP_UI_NUM,
+		IF(CI.BUYER_UI_NUM = #{uiNum}, SUI.UI_NAME, BUI.UI_NAME) OP_UI_NAME,
+		CI.CI_NUM, CI.BI_NUM, BI.BI_TITLE, BI.BI_PRICE, BI.BI_STAT,
+		CI.BUYER_UI_NUM, CI.SELLER_UI_NUM
+		FROM CHAT_INFO CI
+		INNER JOIN USER_INFO BUI ON CI.BUYER_UI_NUM = BUI.UI_NUM
+		INNER JOIN USER_INFO SUI ON CI.SELLER_UI_NUM = SUI.UI_NUM
+		INNER JOIN BOARD_INFO BI ON CI.BI_NUM = BI.BI_NUM
+		WHERE CI.SELLER_UI_NUM = #{uiNum} OR CI.BUYER_UI_NUM = #{uiNum}
+	</select>
+
+    <insert id="insertChatInfo" keyProperty="ciNum" useGeneratedKeys="true">
+	    INSERT INTO CHAT_INFO (BI_NUM, BUYER_UI_NUM, SELLER_UI_NUM)
+	    VALUES (#{biNum}, #{buyerUiNum}, #{sellerUiNum})
+	</insert>
+	
+	<!-- 해당 게시물의 채팅방 개수 -->
+	<select id="selectChatInfoCntByBiNum" resultType="int">
+		SELECT COUNT(*) FROM CHAT_INFO WHERE BI_NUM=#{biNum}
+	</select>
+</mapper>

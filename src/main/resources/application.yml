@@ -1,0 +1,35 @@
+server:
+  port: 80
+  
+spring:
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 100MB
+          
+  thymeleaf:
+    cache: false
+    prefix: classpath:templates/
+    suffix: .html
+  datasource:
+
+    hikari:
+        minimum-idle: 1
+        maximum-pool-size: 1
+        connection-init-sql: select now()
+
+mybatis:
+  mapper-locations: mapper/**/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+ 
+app:
+    
+    
+upload:
+  file-path: C:\dev\upload\
+  
+download:
+  file-path: file:///dev/upload/
+  resource-url: /file/**
+
